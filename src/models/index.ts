@@ -1,14 +1,18 @@
 import path from 'node:path';
 import { Sequelize } from 'sequelize';
 import { User } from './user';
-import { cacategory } from './cacategory';
+import { category } from './category';
+import { paiement } from './paiement';
+import { products } from './product';
 
 
 export interface Database {
   sequelize: Sequelize;
   models: {
     User: typeof User;
-    cacategory: typeof cacategory;
+    category: typeof category;
+    paiement: typeof paiement;
+    products: typeof products;
   };
 }
 
@@ -19,9 +23,9 @@ export type DbOptions = {
 };
 
 export function createDatabase(opts: DbOptions = {}): Database {
-  let database = '../../data-development.sqlite'
+  let database = '../../data-development.sqlite';
   if (process.env.NODE_ENV === 'prod') {
-    database = '../../data-development.sqlite'
+    database = '../../data-development.sqlite';
   }
 
   const storage = opts.inMemory
@@ -40,7 +44,7 @@ export function createDatabase(opts: DbOptions = {}): Database {
 
   return {
     sequelize,
-    models: { User },
+    models: { User, category, paiement, products },
   };
 }
 
