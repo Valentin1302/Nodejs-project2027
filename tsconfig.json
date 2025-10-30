@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "esnext",
+    "pretty": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "sourceRoot": "src",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "noFallthroughCasesInSwitch": false,
+    "sourceMap": true,
+    "lib": [
+      "es5", "es6", "es2015", "dom", "dom.iterable"
+    ],
+    "baseUrl": ".",
+    "types": [
+      "node",
+      "mocha"
+    ],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "paths": {
+      "*": [
+        "node_modules/*",
+        "src/types/*"
+      ]
+    }
+  },
+  "include": [
+    "faker-fix.d.ts",
+    "src/**/*",
+    "lib/*.ts",
+    "bin/*.ts"
+  ],
+  "exclude": [
+    "node_modules/@faker-js/faker/dist/airline-BUL6NtOJ.d.ts",
+    "@faker-js",
+    "scripts",
+    "node_modules/@faker-js/faker",
+    "node_modules/*",
+    "node_modules/sequelize/types/*",
+    "./node_modules/*",
+    "src/**/*.test.ts",
+    "src/*/tests/**/*.test.ts"
+  ]  
+}
