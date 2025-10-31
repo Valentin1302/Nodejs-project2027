@@ -1,18 +1,20 @@
 import path from 'node:path';
 import { Sequelize } from 'sequelize';
 import { User } from './user';
-import { category } from './category';
-import { paiement } from './paiement';
-import { products } from './product';
+import { Category } from './category';
+import { Paiement } from './paiement';
+import { Instructor } from './instructor';
+import { Course } from './course';
 
 
 export interface Database {
   sequelize: Sequelize;
   models: {
     User: typeof User;
-    category: typeof category;
-    paiement: typeof paiement;
-    products: typeof products;
+    Category: typeof Category;
+    Paiement: typeof Paiement;
+    Instructor: typeof Instructor;
+    Course: typeof Course;
   };
 }
 
@@ -40,11 +42,18 @@ export function createDatabase(opts: DbOptions = {}): Database {
 
   // Init models
   User.initModel(sequelize);
+  Category.initModel(sequelize);
+  Paiement.initModel(sequelize);
+  Instructor.initModel(sequelize);
+  Course.initModel(sequelize);
+  // Associations
+  Course.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
+  Course.belongsTo(Instructor, { foreignKey: 'instructorId', as: 'instructor' });
   
 
   return {
     sequelize,
-    models: { User, category, paiement, products },
+    models: { User, Category, Paiement, Instructor, Course },
   };
 }
 
