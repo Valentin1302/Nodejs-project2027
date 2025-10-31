@@ -6,21 +6,25 @@
   "scripts": {
     "global": "npm install -g mocha typescript@5.9.2 ts-node tslint@5.10.0",
     "start": "ENV=local LOG=true nodemon --watch src --ext ts --exec \"ts-node ./src/server.ts\"",
+  "seed": "ts-node ./src/seed.ts",
     "build": "ENV=dev tsc --declaration --outDir dist",
     "unbuild": "rm -rf dist",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
-  "test": "mocha -r ts-node/register --extension ts --recursive --no-silent --no-warnings --timeout 200000 --exit --max-old-space-size=4096 test/**/*.test.ts"
+    "test": "mocha -r ts-node/register --extension ts --recursive --no-silent --no-warnings --timeout 200000 --exit --max-old-space-size=4096 test/**/*.test.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/chai": "^5.2.2",
-    "@types/express": "^5.0.3",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.6.0",
     "@types/sinon": "^17.0.4",
+    "@types/stripe": "^8.0.417",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
@@ -36,8 +40,14 @@
   "dependencies": {
     "@sinonjs/referee-sinon": "^12.0.0",
     "axios": "^1.12.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "googleapis": "^164.1.0",
+    "jsonwebtoken": "^9.0.2",
     "sequelize": "^6.37.7",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "stripe": "^19.2.0"
   }
 }
+
