@@ -1,17 +1,38 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Accueil</title>
+  <meta charset="UTF-8">
+  <title>Accueil - Gestion des cours</title>
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
   <header>
-    <h1>Bienvenue sur la plateforme de cours particuliers</h1>
-    <button id="logoutBtn">Déconnexion</button>
+    <h1>Plateforme de cours particuliers</h1>
+    <nav>
+      <span id="username"></span>
+      <button id="addCourseBtn">➕ Ajouter un cours</button>
+      <button id="logoutBtn">Déconnexion</button>
+    </nav>
   </header>
+
   <main>
-    <h2>Bonjour <span id="username"></span> 👋</h2>
+    <section id="coursesSection">
+      <h2>Liste des cours</h2>
+      <ul id="courseList"></ul>
+    </section>
+
+    <section id="courseFormSection" class="hidden">
+      <h2 id="formTitle">Ajouter un cours</h2>
+      <form id="courseForm">
+        <input type="text" id="title" placeholder="Titre" required />
+        <textarea id="description" placeholder="Description"></textarea>
+        <input type="text" id="categoryName" placeholder="Nom de la catégorie" required />
+        <input type="text" id="instructorName" placeholder="Nom de l’instructeur" required />
+        <input type="number" id="price" placeholder="Prix (€)" />
+        <button type="submit">Enregistrer</button>
+        <button type="button" id="cancelBtn">Annuler</button>
+      </form>
+    </section>
   </main>
 
   <script src="/js/index.js"></script>
