@@ -15,7 +15,7 @@ const PORT: number = 3005;
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'public', 'views')));
+// app.use(express.static(path.join(__dirname, 'public', 'views')));
 
 // Initialize SQLite + Sequelize and sync models
 const inTest = process.env.NODE_ENV === 'test';
