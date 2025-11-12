@@ -49,7 +49,9 @@ export function createDatabase(opts: DbOptions = {}): Database {
   // Associations
   Course.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
   Course.belongsTo(Instructor, { foreignKey: 'instructorId', as: 'instructor' });
-  
+  Category.hasMany(Course, { foreignKey: 'categoryId', as: 'courses' });
+  Instructor.hasMany(Course, { foreignKey: 'instructorId', as: 'courses' });
+
 
   return {
     sequelize,

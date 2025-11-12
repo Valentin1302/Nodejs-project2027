@@ -4,21 +4,26 @@ export class Course extends Model<InferAttributes<Course>, InferCreationAttribut
   declare id: CreationOptional<number>;
   declare title: string;
   declare description: string | null;
-  declare categoryId: number | null;
-  declare instructorId: number | null;
   declare price: number | null;
+  declare categoryName: string;     // Remplace categoryId
+  declare instructorName: string;   // Remplace instructorId
 
   static initModel(sequelize: Sequelize): typeof Course {
     Course.init(
       {
-        id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
         title: { type: DataTypes.STRING(255), allowNull: false },
         description: { type: DataTypes.TEXT, allowNull: true },
-        categoryId: { type: DataTypes.INTEGER, allowNull: true },
-        instructorId: { type: DataTypes.INTEGER, allowNull: true },
         price: { type: DataTypes.FLOAT, allowNull: true },
+        categoryName: { type: DataTypes.STRING(120), allowNull: false },
+        instructorName: { type: DataTypes.STRING(120), allowNull: false },
       },
-      { sequelize, tableName: 'courses', modelName: 'Course', timestamps: true }
+      {
+        sequelize,
+        tableName: 'courses',
+        modelName: 'Course',
+        timestamps: true,
+      }
     );
     return Course;
   }
