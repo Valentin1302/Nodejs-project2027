@@ -6,21 +6,25 @@ import models from './models';
 import categoriesRouter from './routes/categories';
 import instructorsRouter from './routes/instructors';
 import coursesRouter from './routes/courses';
+import authRouter from './routes/auth';
 
 export const app: Application = express();
 const PORT: number = 3005;
 
-// Parse JSON bodies
+
 app.use(express.json());
 
-// Serve static files from src/public (useful for frontend demo assets)
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public', 'views')));
 
 // Initialize SQLite + Sequelize and sync models
 const inTest = process.env.NODE_ENV === 'test';
 const { sequelize } = models;
+// Use `alter: true` so Sequelize will modify existing tables to match models
+// (adds missing columns like `passwordHash` during development).
+// In production you may prefer migrations instead of `alter`.
 sequelize
-  .sync()
+  .sync({ alter: true })
   .then(async () => {
     console.log('Database synchronized');
     // Create a SQL view combining courses, categories and instructors
@@ -46,8 +50,8 @@ sequelize
   });
 
 app.get('/', (_: Request, res: Response) => {
-  // Serve the SPA entrypoint
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  // Serve the main app (home) at root
+  res.sendFile(path.join(__dirname, 'public', 'views', 'index.html'));
 });
 
 // Endpoint to read the SQL view combining courses/categories/instructors
@@ -61,18 +65,6 @@ app.get('/api/course-list', async (_: Request, res: Response) => {
   }
 });
 
-// Minimal animals endpoint used by tests
-app.post('/animals', (req: Request, res: Response) => {
-  const { name, description, price, number } = req.body || {};
-  const created = {
-    type: name,
-    size: description,
-    genre: price,
-    age: number,
-  };
-  return res.status(201).json({ created });
-});
-
 // Only start server when not under test
 if (!inTest) {
   app.listen(PORT, () => {
@@ -81,6 +73,8 @@ if (!inTest) {
 }
 
 // Mount API routes
+// Mount auth routes under /auth so frontend and API paths match
+app.use('/auth', authRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/instructors', instructorsRouter);
 app.use('/api/courses', coursesRouter);
