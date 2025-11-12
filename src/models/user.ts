@@ -4,6 +4,9 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare id: CreationOptional<number>;
   declare name: string;
   declare email: string | null;
+  // store password hashing info
+  declare passwordHash: string | null;
+  declare salt: string | null;
 
   static initModel(sequelize: Sequelize): typeof User {
     User.init(
@@ -16,6 +19,14 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
         name: {
           type: DataTypes.STRING(120),
           allowNull: false,
+        },
+        passwordHash: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+        },
+        salt: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
         },
         email: {
           type: DataTypes.STRING(255),
