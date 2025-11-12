@@ -1,19 +1,32 @@
-import { Router, Request, Response } from 'express';
+// routes/courses.ts
+import express, { Request, Response } from 'express';
 import models from '../models';
+import { Op } from 'sequelize';
 
-const router = Router();
-const { Category } = models as any;
+const router = express.Router();
 
-router.get('/', async (_req: Request, res: Response) => {
-  const list = await Category.findAll();
-  res.json(list);
-});
+// 🔹 GET /api/courses : liste tous les cours ou filtre par catégorie
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    const { category } = req.query; // ?category=Informatique
 
-router.post('/', async (req: Request, res: Response) => {
-  const { name, description } = req.body || {};
-  if (!name) return res.status(400).json({ error: 'name is required' });
-  const created = await Category.create({ name, description });
-  res.status(201).json(created);
+    const whereClause: any = {};
+
+    if (category) {
+      // Si on cherche par nom de catégorie
+      whereClause.categoryName = { [Op.like]: `%${category}%` };
+    }
+
+    const courses = await models.Course.findAll({
+      where: whereClause,
+      order: [['id', 'ASC']],
+    });
+
+    return res.json(courses);
+  } catch (err) {
+    console.error('Error fetching courses:', err);
+    return res.status(500).json({ error: 'Could not fetch courses' });
+  }
 });
 
 export default router;
