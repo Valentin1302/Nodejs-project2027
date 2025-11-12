@@ -1,71 +1,86 @@
-import { Router, Request, Response } from 'express';
+// routes/courses.ts
+import express, { Request, Response } from 'express';
 import models from '../models';
+import { requireAuth } from '../middlewares/authMiddleware';
 
-const router = Router();
-const { Course, Instructor } = models as any;
+const router = express.Router();
 
-// List all courses (basic)
+// 🔹 GET /api/courses : liste tous les cours
 router.get('/', async (_req: Request, res: Response) => {
-  const list = await Course.findAll();
-  res.json(list);
+  try {
+    const courses = await models.Course.findAll({
+      order: [['id', 'ASC']],
+    });
+    return res.json(courses);
+  } catch (err) {
+    console.error('Error fetching courses:', err);
+    return res.status(500).json({ error: 'Could not fetch courses' });
+  }
 });
 
-// Create course
-router.post('/', async (req: Request, res: Response) => {
-  const { title, description, categoryId, instructorId, price } = req.body || {};
-  if (!title) return res.status(400).json({ error: 'title is required' });
-  const created = await Course.create({ title, description, categoryId, instructorId, price });
-  res.status(201).json(created);
+// 🔹 GET /api/courses/:id : un cours
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const course = await models.Course.findByPk(req.params.id);
+    if (!course) return res.status(404).json({ error: 'Course not found' });
+    return res.json(course);
+  } catch (err) {
+    console.error('Error fetching course:', err);
+    return res.status(500).json({ error: 'Could not fetch course' });
+  }
 });
 
-// Nearby search: returns courses whose instructor is within radius (km) of provided lat/lng
-router.get('/nearby', async (req: Request, res: Response) => {
-  const latQ = req.query.lat as string | undefined;
-  const lngQ = req.query.lng as string | undefined;
-  const radiusQ = req.query.radius as string | undefined;
-
-  if (!latQ || !lngQ) return res.status(400).json({ error: 'lat and lng query params are required' });
-  const lat = parseFloat(latQ);
-  const lng = parseFloat(lngQ);
-  const radiusKm = radiusQ ? parseFloat(radiusQ) : 5;
-  if (Number.isNaN(lat) || Number.isNaN(lng) || Number.isNaN(radiusKm)) {
-    return res.status(400).json({ error: 'lat, lng and radius must be numbers' });
-  }
-
-  // Fetch courses with included instructor data
-  const courses = await Course.findAll({ include: [{ model: Instructor, as: 'instructor' }] });
-
-  // Haversine formula
-  function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number) {
-    const toRad = (deg: number) => (deg * Math.PI) / 180;
-    const R = 6371; // Earth radius in km
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
-
-  const results = [] as any[];
-  for (const c of courses) {
-    const instr = (c as any).instructor;
-    if (!instr || instr.latitude == null || instr.longitude == null) continue;
-    const dist = haversineKm(lat, lng, Number(instr.latitude), Number(instr.longitude));
-    if (dist <= radiusKm) {
-      results.push({
-        courseId: c.id,
-        courseTitle: c.title,
-        categoryId: c.categoryId,
-        instructorId: instr.id,
-        instructorName: instr.name,
-        distanceKm: Number(dist.toFixed(3)),
-      });
+// 🔹 POST /api/courses : créer un cours (auth requis)
+router.post('/', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const { title, description, categoryName, instructorName, price } = req.body;
+    if (!title || !categoryName || !instructorName) {
+      return res.status(400).json({ error: 'Missing required fields' });
     }
-  }
 
-  // sort by distance
-  results.sort((a, b) => a.distanceKm - b.distanceKm);
-  res.json({ data: results });
+    const course = await models.Course.create({
+      title,
+      description,
+      categoryName,
+      instructorName,
+      price,
+    });
+
+    return res.status(201).json(course);
+  } catch (err) {
+    console.error('Error creating course:', err);
+    return res.status(500).json({ error: 'Could not create course' });
+  }
+});
+
+// 🔹 PUT /api/courses/:id : modifier un cours (auth requis)
+router.put('/:id', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const course = await models.Course.findByPk(req.params.id);
+    if (!course) return res.status(404).json({ error: 'Course not found' });
+
+    const { title, description, categoryName, instructorName, price } = req.body;
+    await course.update({ title, description, categoryName, instructorName, price });
+
+    return res.json(course);
+  } catch (err) {
+    console.error('Error updating course:', err);
+    return res.status(500).json({ error: 'Could not update course' });
+  }
+});
+
+// 🔹 DELETE /api/courses/:id : supprimer un cours (auth requis)
+router.delete('/:id', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const course = await models.Course.findByPk(req.params.id);
+    if (!course) return res.status(404).json({ error: 'Course not found' });
+
+    await course.destroy();
+    return res.json({ message: 'Course deleted' });
+  } catch (err) {
+    console.error('Error deleting course:', err);
+    return res.status(500).json({ error: 'Could not delete course' });
+  }
 });
 
 export default router;
