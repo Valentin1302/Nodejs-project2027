@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Modifier un cours</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Modifier un cours</h1>
+    <button id="backBtn">← Retour à la liste</button>
+  </header>
+
+  <main>
+    <form id="editCourseForm">
+      <label>
+        Titre :
+        <input type="text" id="title" required>
+      </label>
+
+      <label>
+        Description :
+        <textarea id="description"></textarea>
+      </label>
+
+      <label>
+        Catégorie :
+        <input type="text" id="categoryName" required>
+      </label>
+
+      <label>
+        Instructeur :
+        <input type="text" id="instructorName" required>
+      </label>
+
+      <label>
+        Prix (€) :
+        <input type="number" id="price" step="0.01">
+      </label>
+
+      <button type="submit">💾 Enregistrer</button>
+    </form>
+  </main>
+
+  <script src="/js/edit.js"></script>
+</body>
+</html>
