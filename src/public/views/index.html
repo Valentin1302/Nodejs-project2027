@@ -21,18 +21,12 @@
       <ul id="courseList"></ul>
     </section>
 
-    <section id="courseFormSection" class="hidden">
-      <h2 id="formTitle">Ajouter un cours</h2>
-      <form id="courseForm">
-        <input type="text" id="title" placeholder="Titre" required />
-        <textarea id="description" placeholder="Description"></textarea>
-        <input type="text" id="categoryName" placeholder="Nom de la catégorie" required />
-        <input type="text" id="instructorName" placeholder="Nom de l’instructeur" required />
-        <input type="number" id="price" placeholder="Prix (€)" />
-        <button type="submit">Enregistrer</button>
-        <button type="button" id="cancelBtn">Annuler</button>
-      </form>
-    </section>
+    <div id="filterSection">
+      <label for="filterCategory">Filtrer par catégorie :</label>
+      <input type="text" id="filterCategory" placeholder="Ex : Mathématiques, Physique, etc." />
+      <button id="resetBtn">Réinitialiser</button>
+    </div>
+
   </main>
 
   <script src="/js/index.js"></script>

@@ -1,16 +1,26 @@
 // routes/courses.ts
 import express, { Request, Response } from 'express';
 import models from '../models';
+import { Op } from 'sequelize';
 import { requireAuth } from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
-// 🔹 GET /api/courses : liste tous les cours
-router.get('/', async (_req: Request, res: Response) => {
+// 🔹 GET /api/courses : liste ou filtre par catégorie
+router.get('/', async (req: Request, res: Response) => {
   try {
+    const { category } = req.query; // Exemple : ?category=Math
+
+    const whereClause: any = {};
+    if (category) {
+      whereClause.categoryName = { [Op.like]: `%${category}%` };
+    }
+
     const courses = await models.Course.findAll({
+      where: whereClause,
       order: [['id', 'ASC']],
     });
+
     return res.json(courses);
   } catch (err) {
     console.error('Error fetching courses:', err);
@@ -18,7 +28,7 @@ router.get('/', async (_req: Request, res: Response) => {
   }
 });
 
-// 🔹 GET /api/courses/:id : un cours
+// 🔹 GET /api/courses/:id
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const course = await models.Course.findByPk(req.params.id);
@@ -30,10 +40,11 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
-// 🔹 POST /api/courses : créer un cours (auth requis)
+// 🔹 POST /api/courses
 router.post('/', requireAuth, async (req: Request, res: Response) => {
   try {
     const { title, description, categoryName, instructorName, price } = req.body;
+
     if (!title || !categoryName || !instructorName) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -53,13 +64,13 @@ router.post('/', requireAuth, async (req: Request, res: Response) => {
   }
 });
 
-// 🔹 PUT /api/courses/:id : modifier un cours (auth requis)
+// 🔹 PUT /api/courses/:id
 router.put('/:id', requireAuth, async (req: Request, res: Response) => {
   try {
+    const { title, description, categoryName, instructorName, price } = req.body;
     const course = await models.Course.findByPk(req.params.id);
     if (!course) return res.status(404).json({ error: 'Course not found' });
 
-    const { title, description, categoryName, instructorName, price } = req.body;
     await course.update({ title, description, categoryName, instructorName, price });
 
     return res.json(course);
@@ -69,7 +80,7 @@ router.put('/:id', requireAuth, async (req: Request, res: Response) => {
   }
 });
 
-// 🔹 DELETE /api/courses/:id : supprimer un cours (auth requis)
+// 🔹 DELETE /api/courses/:id
 router.delete('/:id', requireAuth, async (req: Request, res: Response) => {
   try {
     const course = await models.Course.findByPk(req.params.id);
