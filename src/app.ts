@@ -7,6 +7,7 @@ import categoriesRouter from './routes/categories';
 import instructorsRouter from './routes/instructors';
 import coursesRouter from './routes/courses';
 import authRouter from './routes/auth';
+import calendarRoutes from './routes/calendar';
 
 export const app: Application = express();
 const PORT: number = 3005;
@@ -15,14 +16,16 @@ const PORT: number = 3005;
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(express.static(path.join(__dirname, 'public', 'views')));
 
-// Initialize SQLite + Sequelize and sync models
+app.use('/auth', authRouter);
+app.use('/api/categories', categoriesRouter);
+app.use('/api/instructors', instructorsRouter);
+app.use('/api/courses', coursesRouter);
+app.use('/api/calendar', calendarRoutes);
+
 const inTest = process.env.NODE_ENV === 'test';
 const { sequelize } = models;
-// Use `alter: true` so Sequelize will modify existing tables to match models
-// (adds missing columns like `passwordHash` during development).
-// In production you may prefer migrations instead of `alter`.
+
 sequelize
   .sync({ alter: true })
   .then(async () => {
@@ -74,8 +77,5 @@ if (!inTest) {
 
 // Mount API routes
 // Mount auth routes under /auth so frontend and API paths match
-app.use('/auth', authRouter);
-app.use('/api/categories', categoriesRouter);
-app.use('/api/instructors', instructorsRouter);
-app.use('/api/courses', coursesRouter);
+
 

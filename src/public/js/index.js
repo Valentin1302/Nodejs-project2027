@@ -71,6 +71,7 @@ async function loadCourses(category = '') {
         <div class="course-actions">
           <button class="edit" data-id="${c.id}">Modifier</button>
           <button class="delete" data-id="${c.id}">Supprimer</button>
+          <button class="book" data-id="${c.id}">Prendre rendez-vous</button>
         </div>
       `;
       list.appendChild(li);
@@ -98,7 +99,16 @@ async function loadCourses(category = '') {
   } catch (err) {
     console.error('Erreur lors du chargement des cours :', err);
   }
+  
+  // Boutons "Prendre rendez-vous"
+  document.querySelectorAll('.book').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.target.dataset.id;
+      window.location.href = `/views/appointment.html?courseId=${id}`;
+    });
+  });
 }
+
 
 // 🔹 Filtrage instantané à la saisie
 const filterInput = document.getElementById('filterCategory');
