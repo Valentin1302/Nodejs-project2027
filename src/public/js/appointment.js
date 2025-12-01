@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // appointment.js
 
 // Récupérer l'ID du cours depuis l'URL
@@ -6,6 +7,13 @@ const courseId = urlParams.get("courseId");
 
 // Titre de la page
 const pageTitle = document.getElementById("pageTitle");
+=======
+// Récupérer l'ID du cours depuis l'URL
+const urlParams = new URLSearchParams(window.location.search);
+const courseId = urlParams.get('courseId');
+
+const pageTitle = document.getElementById('pageTitle');
+>>>>>>> 803bd70679d7bd5521195b14a42f20a7bfaca636
 pageTitle.textContent = `Prendre rendez-vous pour le cours #${courseId}`;
 
 /**
@@ -13,7 +21,11 @@ pageTitle.textContent = `Prendre rendez-vous pour le cours #${courseId}`;
  */
 async function getCourseInfo() {
   const res = await fetch(`/api/courses/${courseId}`);
+<<<<<<< HEAD
   if (!res.ok) throw new Error("Impossible de charger le cours");
+=======
+  if (!res.ok) throw new Error('Impossible de charger le cours');
+>>>>>>> 803bd70679d7bd5521195b14a42f20a7bfaca636
   return res.json();
 }
 
@@ -21,6 +33,7 @@ async function getCourseInfo() {
  * 🔹 Charger les créneaux disponibles
  */
 async function loadAvailability(courseData) {
+<<<<<<< HEAD
   const res = await fetch("/api/calendar/availability");
   const slots = await res.json();
   const calendarDiv = document.getElementById("calendar");
@@ -28,10 +41,20 @@ async function loadAvailability(courseData) {
 
   if (!slots.length) {
     calendarDiv.innerHTML = "<p>Aucune disponibilité pour les prochains jours.</p>";
+=======
+  const res = await fetch('/api/calendar/availability');
+  const slots = await res.json();
+  const calendarDiv = document.getElementById('calendar');
+  calendarDiv.innerHTML = '';
+
+  if (!slots.length) {
+    calendarDiv.innerHTML = '<p>Aucune disponibilité pour les prochains jours.</p>';
+>>>>>>> 803bd70679d7bd5521195b14a42f20a7bfaca636
     return;
   }
 
   slots.forEach(slot => {
+<<<<<<< HEAD
     const btn = document.createElement("button");
     btn.textContent = new Date(slot.start).toLocaleString("fr-FR");
 
@@ -69,6 +92,28 @@ async function loadAvailability(courseData) {
       } catch (err) {
         console.error("Erreur Stripe:", err);
         alert("Impossible de créer la session de paiement.");
+=======
+    const btn = document.createElement('button');
+    btn.textContent = new Date(slot.start).toLocaleString('fr-FR');
+
+    btn.addEventListener('click', async () => {
+      const bookRes = await fetch('/api/calendar/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          instructor: courseData.instructorName,
+          slot,
+          courseTitle: courseData.title,
+          categoryName: courseData.categoryName
+        })
+      });
+
+      if (bookRes.ok) {
+        const result = await bookRes.json();
+        alert(`✅ Rendez-vous réservé !\nLien Google Calendar : ${result.link}`);
+      } else {
+        alert('❌ Erreur lors de la réservation');
+>>>>>>> 803bd70679d7bd5521195b14a42f20a7bfaca636
       }
     });
 
@@ -77,6 +122,7 @@ async function loadAvailability(courseData) {
 }
 
 /**
+<<<<<<< HEAD
  * 🔹 Confirmer le rendez-vous après paiement réussi
  */
 async function confirmAppointmentAfterPayment() {
@@ -107,12 +153,15 @@ async function confirmAppointmentAfterPayment() {
 }
 
 /**
+=======
+>>>>>>> 803bd70679d7bd5521195b14a42f20a7bfaca636
  * 🔹 Initialisation de la page
  */
 (async function init() {
   try {
     const courseData = await getCourseInfo();
     pageTitle.textContent = `Prendre rendez-vous pour ${courseData.title} (${courseData.categoryName})`;
+<<<<<<< HEAD
 
     await loadAvailability(courseData);
 
@@ -125,5 +174,11 @@ async function confirmAppointmentAfterPayment() {
     console.error("Erreur:", error);
     document.getElementById("calendar").innerHTML =
       "<p>Erreur de chargement des données.</p>";
+=======
+    await loadAvailability(courseData);
+  } catch (error) {
+    console.error('Erreur:', error);
+    document.getElementById('calendar').innerHTML = '<p>Erreur de chargement des données.</p>';
+>>>>>>> 803bd70679d7bd5521195b14a42f20a7bfaca636
   }
 })();
