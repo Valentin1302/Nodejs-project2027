@@ -1,0 +1,34 @@
+<h2>Paiement réussi !</h2>
+<p>Création de votre rendez-vous...</p>
+
+<script>
+  async function createEvent() {
+    const params = new URLSearchParams(window.location.search);
+
+    const body = {
+      slot: {
+        start: params.get("slotStart"),
+        end: params.get("slotEnd")
+      },
+      instructor: params.get("instructor"),
+      courseTitle: params.get("courseTitle"),
+      categoryName: params.get("categoryName")
+    };
+
+    const res = await fetch("/api/calendar/book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      document.body.innerHTML += "<p>Rendez-vous ajouté à votre calendrier !</p>";
+    } else {
+      document.body.innerHTML += "<p>Erreur lors de la création du rendez-vous.</p>";
+    }
+  }
+
+  createEvent();
+</script>

@@ -1,5 +1,5 @@
-
-
+import dotenv from "dotenv";
+dotenv.config();
 import express, { Application, Request, Response } from 'express';
 import path from 'node:path';
 import models from './models';
@@ -8,6 +8,7 @@ import instructorsRouter from './routes/instructors';
 import coursesRouter from './routes/courses';
 import authRouter from './routes/auth';
 import calendarRoutes from './routes/calendar';
+import paymentRouter from './routes/payments';
 
 export const app: Application = express();
 const PORT: number = 3005;
@@ -22,6 +23,7 @@ app.use('/api/categories', categoriesRouter);
 app.use('/api/instructors', instructorsRouter);
 app.use('/api/courses', coursesRouter);
 app.use('/api/calendar', calendarRoutes);
+app.use('/api/stripe', paymentRouter);
 
 const inTest = process.env.NODE_ENV === 'test';
 const { sequelize } = models;
@@ -74,6 +76,56 @@ if (!inTest) {
     console.log(`Server running at http://localhost:${PORT}`);
   });
 }
+
+app.get('/payment-success', async (req: Request, res: Response) => {
+  const { slotStart, slotEnd, instructor, courseTitle, categoryName } = req.query;
+
+  if (!slotStart || !slotEnd || !instructor || !courseTitle || !categoryName) {
+    return res.status(400).send(`<h2>❌ Paramètres manquants pour confirmer le rendez-vous</h2>`);
+  }
+
+  try {
+    const response = await fetch('http://localhost:3005/api/calendar/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        slot: { start: slotStart, end: slotEnd },
+        instructor,
+        courseTitle,
+        categoryName
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      res.send(`
+        <h2>✅ Paiement et rendez-vous confirmés !</h2>
+        <p>Votre rendez-vous pour <strong>${courseTitle} (${categoryName})</strong> avec <strong>${instructor}</strong> est ajouté au calendrier.</p>
+        <button onclick="window.location.href='/'" style="padding:10px 20px; font-size:16px; cursor:pointer;">
+          Retour à l'accueil
+        </button>
+      `);
+    } else {
+      res.send(`
+        <h2>⚠️ Paiement OK mais impossible de créer le rendez-vous</h2>
+        <p>${result.error || 'Erreur inconnue.'}</p>
+        <button onclick="window.location.href='/'" style="padding:10px 20px; font-size:16px; cursor:pointer;">
+          Retour à l'accueil
+        </button>
+      `);
+    }
+  } catch (err) {
+    console.error('Erreur lors de la réservation après paiement:', err);
+    res.send(`
+      <h2>❌ Une erreur est survenue lors de la réservation du rendez-vous</h2>
+      <button onclick="window.location.href='/'" style="padding:10px 20px; font-size:16px; cursor:pointer;">
+        Retour à l'accueil
+      </button>
+    `);
+  }
+});
+
 
 // Mount API routes
 // Mount auth routes under /auth so frontend and API paths match
