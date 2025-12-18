@@ -6,11 +6,7 @@
   "scripts": {
     "global": "npm install -g mocha typescript@5.9.2 ts-node tslint@5.10.0",
     "start": "ENV=local LOG=true nodemon --watch src --ext ts --exec \"ts-node ./src/server.ts\"",
-<<<<<<< HEAD
-    "seed": "ts-node ./src/seed.ts",
-=======
   "seed": "ts-node ./src/seed.ts",
->>>>>>> 803bd70679d7bd5521195b14a42f20a7bfaca636
     "build": "ENV=dev tsc --declaration --outDir dist",
     "unbuild": "rm -rf dist",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
@@ -47,20 +43,11 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-<<<<<<< HEAD
-    "glob": "^13.0.0",
     "googleapis": "^164.1.0",
-    "js-yaml": "^4.1.1",
-=======
-    "googleapis": "^164.1.0",
->>>>>>> 803bd70679d7bd5521195b14a42f20a7bfaca636
     "jsonwebtoken": "^9.0.2",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7",
     "stripe": "^19.2.0"
   }
 }
-<<<<<<< HEAD
-=======
 
->>>>>>> 803bd70679d7bd5521195b14a42f20a7bfaca636
